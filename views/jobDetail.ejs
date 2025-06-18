@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل الوظيفة - <%= job.title %></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F7FAFC; /* Light Gray Background */
+            color: #2D3748; /* Primary Text Color */
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+        }
+        .primary-bg {
+            background-color: #1A365D; /* Primary Blue */
+        }
+        .primary-text {
+            color: #1A365D;
+        }
+        .secondary-text {
+            color: #4FD1C5; /* Secondary Teal */
+        }
+        .primary-btn {
+            background-color: #1A365D; /* Primary Blue */
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .primary-btn:hover {
+            background-color: #112747; /* Darker Blue on hover */
+        }
+        .secondary-btn {
+            background-color: #4FD1C5; /* Secondary Teal */
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .secondary-btn:hover {
+            background-color: #38B2AC; /* Darker Teal on hover */
+        }
+        .card {
+            background-color: white;
+            border: 1px solid #E2E8F0; /* Neutral Border */
+            border-radius: 0.5rem; /* Rounded corners */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+        header {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            background-color: #2D3748; /* Dark Gray for Footer */
+            color: #A0AEC0; /* Light Gray text in Footer */
+        }
+        .job-detail-content h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.125rem; /* text-lg */
+            color: #2D3748;
+            margin-top: 1.5rem; /* mt-6 */
+            margin-bottom: 0.75rem; /* mb-3 */
+        }
+        .job-detail-content p {
+            margin-bottom: 1rem; /* mb-4 */
+            line-height: 1.75; /* leading-relaxed */
+            color: #4A5568; /* text-gray-700 */
+        }
+        .job-detail-content ul {
+            list-style-type: disc;
+            margin-right: 1.5rem; /* mr-6 */
+            margin-bottom: 1rem; /* mb-4 */
+            color: #4A5568; /* text-gray-700 */
+        }
+        .job-detail-content li {
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        .modal-backdrop.active {
+            display: block;
+        }
+        .hidden-form {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ffffff;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            z-index: 2000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid #E2E8F0;
+        }
+        .hidden-form.active {
+            display: block;
+        }
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #2D3748;
+            transition: color 0.3s ease;
+        }
+        .close-modal:hover {
+            color: #1A365D;
+        }
+        .hidden-form h3 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: #2D3748;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .hidden-form textarea,
+        .hidden-form input[type="text"],
+        .hidden-form input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background-color: #F9FAFB;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hidden-form textarea:focus,
+        .hidden-form input[type="text"]:focus,
+        .hidden-form input[type="file"]:focus {
+            border-color: #1A365D;
+            box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+            outline: none;
+        }
+        .hidden-form textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .messages {
+            margin-bottom: 1.25rem;
+            text-align: center;
+        }
+        .success-message {
+            color: #28A745;
+            background-color: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .error-message {
+            color: #DC3545;
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .login-prompt {
+            margin-top: 1.25rem;
+            font-size: 1rem;
+            color: #4A5568;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="py-4">
+        <%- include("partials/headerhome") %>
+        <%- include("partials/headeraction") %>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Job Details Section (Main) -->
+            <div class="lg:col-span-2 card p-6 md:p-8 job-detail-content">
+                <div class="messages">
+                    <% if (successMessage) { %>
+                        <p class="success-message"><%= successMessage %></p>
+                    <% } %>
+                    <% if (errorMessage) { %>
+                        <p class="error-message"><%= errorMessage %></p>
+                    <% } %>
+                </div>
+                <div class="flex flex-col md:flex-row justify-between items-start mb-4">
+                    <div>
+                        <h2 class="text-3xl font-bold primary-text mb-1"><i class="fas fa-briefcase mr-2"></i><%= job.title %></h2>
+                        <p class="text-gray-600 text-md"><%= user.name || "مستخدم" %> - <%= job.location %></p>
+                    </div>
+                    <span class="text-sm font-medium secondary-text bg-teal-100 px-3 py-1.5 rounded mt-2 md:mt-0"><%= job.job_type %></span>
+                </div>
+                <div class="border-t border-gray-200 pt-6 mt-6">
+                    <h4>وصف الوظيفة</h4>
+                    <p><%= job.description %></p>
+                    <% if (job.responsibilities && job.responsibilities.length > 0) { %>
+                        <h4>المسؤوليات الرئيسية</h4>
+                        <ul>
+                            <% job.responsibilities.forEach(function(item) { %>
+                                <li><%= item %></li>
+                            <% }) %>
+                        </ul>
+                    <% } %>
+                    <% if (job.qualifications && job.qualifications.length > 0) { %>
+                        <h4>المؤهلات المطلوبة</h4>
+                        <ul>
+                            <% job.qualifications.forEach(function(item) { %>
+                                <li><%= item %></li>
+                            <% }) %>
+                        </ul>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Sidebar Section -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Apply Button Card -->
+                <div class="card p-6 text-center">
+                    <% if (currentUserId) { %>
+                        <button class="w-full primary-btn font-semibold py-3 px-4 rounded-md text-lg mb-3" onclick="openModal('<%= job.job_id %>')">
+                            <i class="fas fa-paper-plane mr-2"></i> قدم الآن
+                        </button>
+                    <% } else { %>
+                        <p class="login-prompt">يرجى تسجيل الدخول للتقديم على الوظيفة.</p>
+                    <% } %>
+                </div>
+
+                <!-- Job Summary Card -->
+                <div class="card p-6">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">ملخص الوظيفة</h4>
+                    <ul class="space-y-3 text-sm text-gray-600">
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt w-5 mr-2 text-gray-400"></i>
+                            <span><%= job.location %></span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-briefcase w-5 mr-2 text-gray-400"></i>
+                            <span><%= job.job_type %></span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-layer-group w-5 mr-2 text-gray-400"></i>
+                            <span><%= job.category || 'غير محدد' %></span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-building w-5 mr-2 text-gray-400"></i>
+                            <span><%= user.name || 'مستخدم' %></span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="far fa-calendar-alt w-5 mr-2 text-gray-400"></i>
+                            <span>
+                                <%= new Date(job.created_at).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                            </span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-money-bill-wave w-5 mr-2 text-gray-400"></i>
+                            <span>
+                                <% if (job.salary_after_interview) { %>
+                                    الراتب بعد المقابلة
+                                <% } else if (job.salary_min && job.salary_max) { %>
+                                    <%= job.salary_min + " - " + job.salary_max + " " + job.currency %>
+                                <% } else { %>
+                                    غير محدد
+                                <% } %>
+                            </span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock w-5 mr-2 text-gray-400"></i>
+                            <span><%= job.duration ? job.duration + " يوم" : "غير محدد" %></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Company Info Card -->
+                <div class="card p-6">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">صاحب الوظيفة</h4>
+                    <h1 id="username" class="text-xl font-semibold primary-text"><%= user.name || "مستخدم" %></h1>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Backdrop -->
+    <div id="modal-backdrop" class="modal-backdrop"></div>
+
+    <!-- Application Modal -->
+    <% if (currentUserId) { %>
+        <div id="modal-<%= job.job_id %>" class="hidden-form">
+            <button class="close-modal" onclick="closeModal('<%= job.job_id %>')">×</button>
+            <form action="/apply-job" method="post">
+                <h3>تقديم طلب للوظيفة: <%= job.title %></h3>
+                <input type="hidden" name="job_id" value="<%= job.job_id %>" />
+                <input type="text" name="applicant_name" placeholder="الاسم الكامل" required />
+                <textarea name="cover_letter" placeholder="رسالة التقديم" required></textarea>
+                <input type="file" name="resume" accept=".pdf,.doc,.docx" />
+                <button type="submit" class="w-full secondary-btn font-semibold py-3 px-4 rounded-md text-lg">إرسال الطلب</button>
+            </form>
+        </div>
+    <% } %>
+
+    <!-- Footer -->
+    <footer class="mt-12 py-8">
+        <%- include("partials/footer") %>
+    </footer>
+
+    <script>
+        function openModal(jobId) {
+            const modal = document.getElementById(`modal-${jobId}`);
+            if (modal) {
+                modal.classList.add("active");
+                document.getElementById("modal-backdrop").classList.add("active");
+            }
+        }
+
+        function closeModal(jobId) {
+            const modal = document.getElementById(`modal-${jobId}`);
+            if (modal) {
+                modal.classList.remove("active");
+                document.getElementById("modal-backdrop").classList.remove("active");
+            }
+        }
+    </script>
+</body>
+</html>

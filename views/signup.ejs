@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب جديد</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #F7FAFC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 3rem 1rem;
+            direction: rtl;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 28rem;
+            text-align: center;
+        }
+
+        .text h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1A365D;
+            margin-bottom: 0.5rem;
+        }
+
+        .text p {
+            font-size: 0.875rem;
+            color: #6B7280;
+            margin-bottom: 1.5rem;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .input-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .input-box span {
+            display: block;
+            text-align: right;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .input-box input[type="text"],
+        .input-box input[type="email"],
+        .input-box input[type="password"],
+        .input-box input[type="number"],
+        .input-box input[type="tel"],
+        .input-box input[type="url"],
+        .input-box select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            color: #1F2937;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            background-color: #fff;
+        }
+
+        .input-box input:focus,
+        .input-box select:focus {
+            border-color: #1A365D;
+            box-shadow: 0 0 0 1px #1A365D;
+            outline: none;
+        }
+
+        .input-box input[type="file"] {
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            color: #6B7280;
+        }
+
+        .input-box input[type="file"]::file-selector-button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            background-color: #1A365D;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 0.5rem;
+        }
+
+        .input-box input[type="file"]::file-selector-button:hover {
+            background-color: #112747;
+        }
+
+        .password-box {
+            position: relative;
+        }
+
+        .password-box .toggle-password {
+            position: absolute;
+            top: 50%;
+            left: 0.75rem;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6B7280;
+            transition: color 0.3s ease;
+            padding: 0.25rem;
+        }
+
+        .password-box .toggle-password:hover {
+            color: #1A365D;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            background-color: #1A365D;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #112747;
+        }
+
+        .error-message {
+            color: #E53E3E;
+            background-color: rgba(229, 62, 62, 0.1);
+            border: 1px solid rgba(229, 62, 62, 0.3);
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .links a {
+            color: #4FD1C5;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .links a:hover {
+            color: #38B2AC;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+            .text h1 {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text">
+            <h1>إنشاء حساب</h1>
+            <p>مرحبًا بك! يرجى تعبئة النموذج أدناه لإنشاء حساب جديد.</p>
+        </div>
+        <form action="/signup" method="POST" enctype="multipart/form-data">
+            <div class="input-box">
+                <span>الاسم الكامل</span>
+                <input type="text" id="name" name="name" required placeholder="الاسم الكامل">
+            </div>
+            <div class="input-box">
+                <span>صورة المستخدم</span>
+                <input type="file" id="avatar" name="avatar" accept="image/*" required>
+            </div>
+            <div class="input-box">
+                <span>العمر</span>
+                <input type="number" id="age" name="age" min="1" required placeholder="العمر">
+            </div>
+            <div class="input-box">
+                <span>الجنس</span>
+                <select id="gender" name="gender" required>
+                    <option value="male">ذكر</option>
+                    <option value="female">أنثى</option>
+                </select>
+            </div>
+            <div class="input-box">
+                <span>الدولة</span>
+                <input type="text" id="country" name="country" required placeholder="الدولة">
+            </div>
+            <div class="input-box">
+                <span>اللغة</span>
+                <input type="text" id="language" name="language" required placeholder="اللغة">
+            </div>
+            <div class="input-box">
+                <span>المهنة</span>
+                <input type="text" id="occupation" name="occupation" required placeholder="المهنة">
+            </div>
+            <div class="input-box">
+                <span>رقم الهاتف</span>
+                <input type="tel" id="phone" name="phone" required placeholder="رقم الهاتف">
+            </div>
+            <div class="input-box">
+                <span>البريد الإلكتروني</span>
+                <input type="email" id="email" name="email" required placeholder="example@domain.com">
+            </div>
+            <div class="input-box">
+                <span>رابط الموقع الشخصي</span>
+                <input type="url" id="portfolio" name="portfolio" placeholder="رابط الموقع الشخصي">
+            </div>
+            <div class="input-box password-box">
+                <span>كلمة المرور</span>
+                <input type="password" id="password" name="password" required placeholder="********">
+                <i class="fas fa-eye toggle-password"></i>
+            </div>
+            <div class="input-box password-box">
+                <span>تأكيد كلمة المرور</span>
+                <input type="password" id="confirm_password" name="confirm_password" required placeholder="********">
+                <i class="fas fa-eye toggle-password"></i>
+            </div>
+            <button type="submit">إنشاء الحساب</button>
+            <% if (typeof errorMessage !== 'undefined') { %>
+            <span class="error-message"><%= errorMessage %></span>
+            <% } %>
+        </form>
+        <div class="links">
+            <a href="/login">لديك حساب بالفعل؟ تسجيل الدخول</a>
+        </div>
+    </div>
+    <script>
+        // Password visibility toggle for both password fields
+        const togglePasswords = document.querySelectorAll(".toggle-password");
+        togglePasswords.forEach(toggle => {
+            toggle.addEventListener("click", () => {
+                const passwordInput = toggle.previousElementSibling;
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    toggle.classList.remove("fa-eye");
+                    toggle.classList.add("fa-eye-slash");
+                } else {
+                    passwordInput.type = "password";
+                    toggle.classList.remove("fa-eye-slash");
+                    toggle.classList.add("fa-eye");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

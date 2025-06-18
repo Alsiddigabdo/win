@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/messages.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" /> <!-- Added Font Awesome -->
+  <title>الرسائل الواردة</title>
+  <style>
+    /* Add styles for feedback messages */
+    .feedback-message {
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin: 10px 0;
+        font-size: 0.9rem;
+        text-align: center;
+        display: none; /* Hidden by default */
+        animation: fadeIn 0.3s ease;
+    }
+    .message-success {
+        background-color: #e8f5e9; /* Light green */
+        color: #2e7d32; /* Dark green */
+    }
+    .message-error {
+        background-color: #ffebee; /* Light red */
+        color: #c62828; /* Dark red */
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    /* Style delete buttons */
+    .delete-btn {
+        background: none;
+        border: none;
+        color: #e74c3c; /* Red color for delete */
+        cursor: pointer;
+        font-size: 1rem; /* Adjust size as needed */
+        padding: 5px;
+        transition: color 0.2s;
+    }
+    .delete-btn:hover {
+        color: #c0392b; /* Darker red on hover */
+    }
+    .delete-all-btn {
+        background: none;
+        border: 1px solid #e74c3c;
+        color: #e74c3c;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s, color 0.2s;
+    }
+    .delete-all-btn:hover {
+        background-color: #e74c3c;
+        color: white;
+    }
+    .notification-actions {
+        margin-right: auto; /* Push actions to the left in RTL */
+        padding-left: 15px;
+    }
+    .notification-list li {
+        display: flex; /* Use flexbox for alignment */
+        align-items: center; /* Align items vertically */
+        cursor: pointer; /* Keep list item clickable */
+    }
+    .notification-content {
+       flex-grow: 1; /* Allow content to take available space */
+       display: flex;
+       align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <%- include('partials/headerhome') %>
+    <%- include('partials/headeraction') %>
+  </header>
+
+  <div class="container">
+    <text class="text">
+      <p>الرسائل الواردة</p>
+      <!-- Delete All form - Consider implementing AJAX for this too -->
+      <form action="/messages/delete-all" method="POST" class="delete-all-form" id="delete-all-messages-form">
+        <button type="submit" class="delete-all-btn">
+          <i class="fas fa-trash"></i> حذف الكل
+        </button>
+      </form>
+    </text>
+
+    <!-- Feedback message area -->
+    <div id="feedback-message-area"></div>
+
+    <ul class="notification-list" id="message-list">
+      <% if (messages.length === 0) { %>
+        <p class="no-notifications" style="text-align: center; color: darkcyan">
+          لا توجد رسائل لعرضها
+        </p>
+      <% } else { %>
+        <% messages.forEach((message) => { %>
+          <li data-sender-id="<%= message.sender_id %>" data-message-id="<%= message.id %>" class="message-item">
+            <div class="notification-content">
+              <img
+                src="<%= message.sender_avatar && message.sender_avatar.includes('/uploads/avatars/') ? message.sender_avatar : '/uploads/avatars/'+ (message.sender_avatar || 'default-avatar.png') %>"
+                class="avatar"
+                alt="<%= message.sender_name || 'User' %>"
+                onerror="this.src='/uploads/images/pngwing.com.png'"
+              />
+              <div class="notification-text">
+                <strong><%= message.sender_name %></strong>
+                <p><%= message.content %></p>
+                <span class="created-at"><%= new Date(message.created_at).toLocaleString('ar-EG', { hour12: true }) %></span>
+              </div>
+            </div>
+            <div class="notification-actions">
+              <!-- Removed form, using button with data attribute -->
+              <button type="button" class="delete-btn" data-message-id="<%= message.id %>">
+                <i class="fas fa-trash"></i>
+                <span style="font-size: 0.8em; margin-right: 5px;">حذف</span> <!-- Added text label -->
+              </button>
+            </div>
+          </li>
+        <% }) %>
+      <% } %>
+    </ul>
+  </div>
+
+  <script>
+    const userId = "<%= userId %>";
+    const messageList = document.getElementById('message-list');
+    const feedbackArea = document.getElementById('feedback-message-area');
+
+    // Function to display feedback messages
+    function displayFeedback(message, type = 'success') {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `feedback-message message-${type}`;
+        messageDiv.textContent = message;
+        feedbackArea.innerHTML = ''; // Clear previous messages
+        feedbackArea.appendChild(messageDiv);
+        messageDiv.style.display = 'block';
+
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 4000); // Hide after 4 seconds
+    }
+
+    if (messageList) {
+        messageList.addEventListener('click', async (event) => {
+            const deleteButton = event.target.closest('button.delete-btn');
+            const messageItem = event.target.closest('li.message-item');
+
+            if (deleteButton) {
+                event.stopPropagation(); // Prevent li click handler (navigation)
+                const messageId = deleteButton.dataset.messageId;
+
+                // Optional: Confirmation dialog
+                // if (!confirm('هل أنت متأكد من حذف هذه المحادثة؟ سيتم حذف جميع الرسائل فيها.')) return;
+
+                try {
+                    const response = await fetch(`/messages/delete/${messageId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // Include CSRF token header if needed
+                        },
+                        // body: JSON.stringify({ _csrf: 'your_csrf_token' }) // Include CSRF token if needed
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        if (messageItem) {
+                            messageItem.remove(); // Remove the message item from the list
+                        }
+                        displayFeedback('تم حذف الرسالة بنجاح.', 'success');
+                        // Check if list is empty now
+                        if (messageList.children.length === 0) {
+                            const noMessages = document.createElement('p');
+                            noMessages.className = 'no-notifications';
+                            noMessages.style.textAlign = 'center';
+                            noMessages.style.color = 'darkcyan';
+                            noMessages.textContent = 'لا توجد رسائل لعرضها';
+                            messageList.appendChild(noMessages);
+                        }
+                    } else {
+                        throw new Error(result.error || 'فشل حذف الرسالة.');
+                    }
+                } catch (error) {
+                    console.error('Error deleting message:', error);
+                    displayFeedback(error.message || 'حدث خطأ أثناء محاولة الحذف.', 'error');
+                }
+
+            } else if (messageItem) {
+                // Handle navigation if the click was not on the delete button
+                const senderId = messageItem.dataset.senderId;
+                if (senderId) {
+                    window.location.href = `/chat/${senderId}`;
+                }
+            }
+        });
+    }
+
+    // Optional: Add AJAX handling for the 'Delete All' button as well
+    const deleteAllForm = document.getElementById('delete-all-messages-form');
+    if (deleteAllForm) {
+        deleteAllForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            // Optional: Confirmation dialog
+            if (!confirm('هل أنت متأكد من حذف جميع الرسائل؟ هذا الإجراء لا يمكن التراجع عنه.')) return;
+
+            const button = deleteAllForm.querySelector('button');
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحذف...';
+
+            try {
+                const response = await fetch('/messages/delete-all', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Include CSRF token header if needed
+                    },
+                    // body: JSON.stringify({ _csrf: 'your_csrf_token' }) // Include CSRF token if needed
+                });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    messageList.innerHTML = '<p class="no-notifications" style="text-align: center; color: darkcyan">لا توجد رسائل لعرضها</p>';
+                    displayFeedback('تم حذف جميع الرسائل بنجاح.', 'success');
+                } else {
+                    throw new Error(result.error || 'فشل حذف جميع الرسائل.');
+                }
+            } catch (error) {
+                console.error('Error deleting all messages:', error);
+                displayFeedback(error.message || 'حدث خطأ أثناء محاولة حذف الكل.', 'error');
+            } finally {
+                 button.disabled = false;
+                 button.innerHTML = '<i class="fas fa-trash"></i> حذف الكل';
+            }
+        });
+    }
+
+  </script>
+</body>
+<footer style="margin-top: 60vh">
+  <%- include('partials/footer') %>
+</footer>
+
+</html>

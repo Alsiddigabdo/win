@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Removed conflicting font link -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #F7FAFC;
+            flex-direction: column;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            direction: rtl;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 28rem;
+            text-align: center;
+             padding: 3rem 1rem;
+        }
+
+        .container h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1A365D;
+            margin-bottom: 1.5rem;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .input-group {
+            position: relative;
+            width: 100%;
+        }
+
+        .input-group label {
+            display: block;
+            text-align: right;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .input-group input[type="email"],
+        .input-group input[type="password"] {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            color: #1F2937;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            background-color: #fff;
+        }
+
+        .input-group input:focus {
+            border-color: #1A365D;
+            box-shadow: 0 0 0 1px #1A365D;
+            outline: none;
+        }
+
+        .text-right a {
+            color: #1A365D;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .text-right a:hover {
+            color: #112747;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            background-color: #1A365D;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #112747;
+        }
+
+        .error-message {
+            color: #E53E3E;
+            background-color: rgba(229, 62, 62, 0.1);
+            border: 1px solid rgba(229, 62, 62, 0.3);
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .text-center {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .text-center a {
+            color: #4FD1C5;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .text-center a:hover {
+            color: #38B2AC;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+            .container h1 {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+  <header style="width: 100%; margin-bottom: 1%;">
+    <%- include('partials/headerhome') %>
+  <%- include('partials/headeraction') %>
+
+  </header>
+
+    <div class="container">
+        <h1>تسجيل الدخول</h1>
+        <% if (typeof errorMessage !== 'undefined') { %>
+        <div class="error-message"><%= errorMessage %></div>
+        <% } %>
+        <form action="/login" method="POST">
+            <div class="input-group">
+                <label for="email">البريد الإلكتروني</label>
+                <input type="email" id="email" name="email" required placeholder="example@domain.com">
+            </div>
+            <div class="input-group">
+                <label for="password">كلمة المرور</label>
+                <input type="password" id="password" name="password" required placeholder="********">
+                <div class="text-right mt-2">
+                    <a href="/forgotPassword" class="link">هل نسيت كلمة المرور؟</a>
+                </div>
+            </div>
+            <button type="submit">تسجيل الدخول</button>
+        </form>
+        <div class="text-center">
+            <p class="text-sm text-gray-600">
+                ليس لديك حساب؟ 
+                <a href="/signup">أنشئ حساباً جديداً</a>
+            </p>
+        </div>
+    </div>
+</body>
+    <footer style="width: 100%; margin-top: 14vh;" ><%- include('partials/footer') %></footer>
+
+</html>
