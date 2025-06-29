@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار رفع الصور - Cloudinary</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .upload-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .preview-container {
+            margin: 20px 0;
+            min-height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .upload-btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .upload-btn:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .image-url {
+            word-break: break-all;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h1>اختبار رفع الصور إلى Cloudinary</h1>
+        
+        <!-- رفع صورة واحدة -->
+        <div>
+            <h3>رفع صورة واحدة</h3>
+            <input type="file" id="singleImage" accept="image/*">
+            <button class="upload-btn" onclick="uploadSingle()">رفع الصورة</button>
+            <div id="singlePreview" class="preview-container"></div>
+            <div id="singleResult"></div>
+        </div>
+
+        <!-- رفع عدة صور -->
+        <div>
+            <h3>رفع عدة صور</h3>
+            <input type="file" id="multipleImages" accept="image/*" multiple>
+            <button class="upload-btn" onclick="uploadMultiple()">رفع الصور</button>
+            <div id="multiplePreview" class="preview-container"></div>
+            <div id="multipleResult"></div>
+        </div>
+
+        <!-- رفع صورة بروفايل -->
+        <div>
+            <h3>رفع صورة بروفايل</h3>
+            <input type="file" id="avatarImage" accept="image/*">
+            <button class="upload-btn" onclick="uploadAvatar()">رفع صورة البروفايل</button>
+            <div id="avatarPreview" class="preview-container"></div>
+            <div id="avatarResult"></div>
+        </div>
+    </div>
+
+    <script src="/js/cloudinary-upload.js"></script>
+    <script>
+        // رفع صورة واحدة
+        async function uploadSingle() {
+            const input = document.getElementById('singleImage');
+            const result = await CloudinaryUpload.uploadImageWithPreview(
+                input, 
+                'singlePreview', 
+                '/upload/single'
+            );
+            
+            const resultDiv = document.getElementById('singleResult');
+            if (result && result.success) {
+                resultDiv.innerHTML = `
+                    <div class="result success">
+                        <h4>تم رفع الصورة بنجاح!</h4>
+                        <div class="image-url">
+                            <strong>رابط الصورة:</strong><br>
+                            ${result.imageUrl}
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h4>خطأ في رفع الصورة</h4>
+                        <p>${result ? result.error : 'حدث خطأ غير متوقع'}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // رفع عدة صور
+        async function uploadMultiple() {
+            const input = document.getElementById('multipleImages');
+            const files = input.files;
+            
+            if (files.length === 0) {
+                alert('الرجاء اختيار صور');
+                return;
+            }
+
+            // إنشاء معاينة
+            const previewContainer = document.getElementById('multiplePreview');
+            previewContainer.innerHTML = '';
+            
+            for (let i = 0; i < files.length; i++) {
+                CloudinaryUpload.createImagePreview(files[i], 'multiplePreview');
+            }
+
+            // رفع الصور
+            const result = await CloudinaryUpload.uploadMultipleImages(files);
+            
+            const resultDiv = document.getElementById('multipleResult');
+            if (result.success) {
+                let urlsHtml = '';
+                result.images.forEach((img, index) => {
+                    urlsHtml += `
+                        <div class="image-url">
+                            <strong>الصورة ${index + 1}:</strong><br>
+                            ${img.url}
+                        </div>
+                    `;
+                });
+                
+                resultDiv.innerHTML = `
+                    <div class="result success">
+                        <h4>تم رفع ${result.images.length} صور بنجاح!</h4>
+                        ${urlsHtml}
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h4>خطأ في رفع الصور</h4>
+                        <p>${result.error}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // رفع صورة بروفايل
+        async function uploadAvatar() {
+            const input = document.getElementById('avatarImage');
+            const result = await CloudinaryUpload.uploadImageWithPreview(
+                input, 
+                'avatarPreview', 
+                '/upload/avatar'
+            );
+            
+            const resultDiv = document.getElementById('avatarResult');
+            if (result && result.success) {
+                resultDiv.innerHTML = `
+                    <div class="result success">
+                        <h4>تم رفع صورة البروفايل بنجاح!</h4>
+                        <div class="image-url">
+                            <strong>رابط الصورة:</strong><br>
+                            ${result.imageUrl}
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h4>خطأ في رفع صورة البروفايل</h4>
+                        <p>${result ? result.error : 'حدث خطأ غير متوقع'}</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html> 
